@@ -5,7 +5,7 @@ import { useNetwork, useSwitchNetwork } from 'wagmi';
 
 const UseSwitchNetwork = () => {
 	const { chain } = useNetwork();
-	const { chains, error, isLoading, pendingChainId, switchNetwork } =
+	const { chains, error, isLoading, pendingChainId, switchNetwork, status } =
 		useSwitchNetwork({
 			onError(error) {
 				console.error('Error ->', error);
@@ -39,7 +39,7 @@ const UseSwitchNetwork = () => {
 					{isLoading && pendingChainId === x.id && ' (switching)'}
 				</button>
 			))}
-			<div>{error && error.message}</div>
+			<div>{error && (error?.message ?? 'Failed to switch')}</div>
 		</>
 	);
 };

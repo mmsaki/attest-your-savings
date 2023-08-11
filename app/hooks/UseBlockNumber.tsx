@@ -6,11 +6,11 @@ import { useBlockNumber } from 'wagmi';
 const UseBlockNumber = () => {
 	const { data, isError, isLoading } = useBlockNumber({
 		scopeKey: 'wagmi',
-		suspense: true,
-		watch: true,
-		onBlock(blockNumber) {
-			console.log('New Block: ', blockNumber);
-		},
+		// suspense: true,
+		// watch: true,
+		// onBlock(blockNumber) {
+		// 	console.log('New Block: ', blockNumber);
+		// },
 		onSuccess(data) {
 			console.log('Success ->', data);
 		},

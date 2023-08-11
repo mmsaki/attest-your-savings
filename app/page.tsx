@@ -1,10 +1,10 @@
 'use client';
 import { useAccount } from 'wagmi';
-import UseConnect from '@/hooks/UseConnect';
-import UseSwitchNetwork from '@/hooks/UseSwitchNetwork';
-import UseBalance from '@/hooks/UseBalance';
-import UseToken from '@/hooks/UseToken';
-import UseBlockNumber from '@/hooks/UseBlockNumber';
+import UseConnect from '@/app/hooks/UseConnect';
+import UseSwitchNetwork from '@/app/hooks/UseSwitchNetwork';
+import UseBalance from '@/app/hooks/UseBalance';
+import UseToken from '@/app/hooks/UseToken';
+import UseBlockNumber from '@/app/hooks/UseBlockNumber';
 
 export default function Home() {
 	const { address, isConnected } = useAccount();

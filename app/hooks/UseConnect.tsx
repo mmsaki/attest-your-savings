@@ -62,9 +62,13 @@ const UseConnect = () => {
 			)}
 			{connectors.map((connector) => (
 				<button
-					disabled={!connector.ready}
+					disabled={
+						!connector.ready ||
+						isReconnecting ||
+						connector.id === activeConnector?.id
+					}
 					key={connector.id}
-					onClick={() => connect({ connector })}
+					onClick={() => connect({ connector: connector })}
 					type='button'
 				>
 					{connector.name}

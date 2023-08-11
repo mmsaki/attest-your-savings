@@ -9,10 +9,10 @@ type UseBalanceProps = {
 };
 
 const UseBalance = ({ address, token }: UseBalanceProps) => {
-	const { data, isError, isLoading } = useBalance({
+	const { data, isError, isLoading, refetch } = useBalance({
 		address: address,
 		token: token,
-		watch: true,
+		// watch: true,
 		scopeKey: 'wagmi',
 		suspense: true,
 		onError(error) {
@@ -28,8 +28,13 @@ const UseBalance = ({ address, token }: UseBalanceProps) => {
 	if (isLoading) return <div>Fetching balance...</div>;
 	if (isError) return <div>Error fetching balance</div>;
 	return (
-		<div className='text-red-100'>
-			Balance: {data?.formatted} {data?.symbol}
+		<div className='flex flex-row'>
+			<div>
+				Balance: {data?.formatted} {data?.symbol}
+			</div>
+			<button className='px-2' type='button' onClick={() => refetch()}>
+				refetch
+			</button>
 		</div>
 	);
 };
