@@ -4,14 +4,14 @@ import React from 'react';
 import { WagmiConfig, createConfig, configureChains } from 'wagmi';
 import { createPublicClient, http } from 'viem';
 import {
-	arbitrum,
 	base,
 	goerli,
-	optimism,
 	zora,
-	mainnet,
+	zoraTestnet,
+	baseGoerli,
 	sepolia,
-} from 'wagmi/chains';
+	polygonMumbai,
+} from '../constants/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
@@ -22,14 +22,13 @@ import { LedgerConnector } from 'wagmi/connectors/ledger';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { SafeConnector } from 'wagmi/connectors/safe';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
-import { WalletConnectLegacyConnector } from 'wagmi/connectors/walletConnectLegacy';
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY!;
 const infuraKey = process.env.NEXT_PUBLIC_INFURA_KEY!;
 const walletConnectID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-	[mainnet, optimism, arbitrum, goerli, sepolia, base, zora],
+	[baseGoerli, zoraTestnet, goerli, sepolia, base, zora, polygonMumbai],
 	[
 		alchemyProvider({ apiKey: alchemyKey as string }),
 		infuraProvider({ apiKey: infuraKey as string }),
