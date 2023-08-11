@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 
-const Connect = () => {
+const UseConnect = () => {
 	const {
 		connector: activeConnector,
 		isConnected,
@@ -78,4 +78,4 @@ const Connect = () => {
 	);
 };
 
-export default Connect;
+export default UseConnect;

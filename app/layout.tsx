@@ -24,12 +24,12 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body className={inter.className}>
-				<div className='relative pl-[18.75rem xl:pl-20 md:pl-0 md:pb-20'>
-					<div>
-						<Providers>{children}</Providers>
+				<Providers>
+					<div className='relative pl-[18.75rem xl:pl-20 md:pl-0 md:pb-20'>
+						<div>{children}</div>
 					</div>
-				</div>
-				<Menu />
+					<Menu />
+				</Providers>
 			</body>
 		</html>
 	);

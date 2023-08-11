@@ -1,11 +1,17 @@
+'use client';
+
 import React from 'react';
-import { useBalance, useAccount } from 'wagmi';
+import { useBalance } from 'wagmi';
 
-const Balance = () => {
-	const { address } = useAccount();
+type UseBalanceProps = {
+	address?: any;
+	token?: any;
+};
 
+const UseBalance = ({ address, token }: UseBalanceProps) => {
 	const { data, isError, isLoading } = useBalance({
 		address: address,
+		token: token,
 		watch: true,
 		scopeKey: 'wagmi',
 		suspense: true,
@@ -22,10 +28,10 @@ const Balance = () => {
 	if (isLoading) return <div>Fetching balance...</div>;
 	if (isError) return <div>Error fetching balance</div>;
 	return (
-		<div>
+		<div className='text-red-100'>
 			Balance: {data?.formatted} {data?.symbol}
 		</div>
 	);
 };
 
-export default Balance;
+export default UseBalance;

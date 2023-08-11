@@ -1,7 +1,9 @@
+'use client';
+
 import React from 'react';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
 
-const SwitchNetwork = () => {
+const UseSwitchNetwork = () => {
 	const { chain } = useNetwork();
 	const { chains, error, isLoading, pendingChainId, switchNetwork } =
 		useSwitchNetwork({
@@ -42,4 +44,4 @@ const SwitchNetwork = () => {
 	);
 };
 
-export default SwitchNetwork;
+export default UseSwitchNetwork;
