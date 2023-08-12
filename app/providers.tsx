@@ -11,6 +11,7 @@ import {
 	baseGoerli,
 	sepolia,
 	polygonMumbai,
+	modeTestnet,
 } from '../constants/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { infuraProvider } from 'wagmi/providers/infura';
@@ -28,7 +29,16 @@ const infuraKey = process.env.NEXT_PUBLIC_INFURA_KEY!;
 const walletConnectID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-	[baseGoerli, zoraTestnet, goerli, sepolia, base, zora, polygonMumbai],
+	[
+		baseGoerli,
+		zoraTestnet,
+		modeTestnet,
+		sepolia,
+		base,
+		zora,
+		goerli,
+		polygonMumbai,
+	],
 	[
 		alchemyProvider({ apiKey: alchemyKey as string }),
 		infuraProvider({ apiKey: infuraKey as string }),
@@ -86,7 +96,7 @@ const config = createConfig({
 			chains,
 			options: {
 				allowedDomains: [/gnosis-safe.io$/, /https:\/\/app.safe.global$/],
-				debug: false,
+				debug: true,
 			},
 		}),
 	],

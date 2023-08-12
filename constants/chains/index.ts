@@ -7,3 +7,4 @@ export { baseGoerli } from './base-goerli';
 export { base } from './base';
 export { sepolia } from './sepolia';
 export { polygonMumbai } from './polygon-mumbai';
+export { modeTestnet } from './mode-testnet';
