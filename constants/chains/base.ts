@@ -7,10 +7,10 @@ export const base = {
 	nativeCurrency: { name: 'Base', symbol: 'ETH', decimals: 18 },
 	rpcUrls: {
 		default: {
-			http: ['https://mainnet.base.org'],
+			http: ['https://base-mainnet.public.blastapi.io'],
 		},
 		public: {
-			http: ['https://mainnet.base.org'],
+			http: ['https://base-mainnet.public.blastapi.io'],
 		},
 	},
 	blockExplorers: {
