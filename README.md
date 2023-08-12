@@ -22,9 +22,25 @@
 
 ## Project scope
 
-1. Create savings accounts for crosschain
+1. Initialize safe contract with protocol sdk for savings account
 1. View all your porfolio in one place
 1. No need to use bridges
+
+## Initialize Safe
+
+1. We install safe sdks
+   ```sh
+   npm i @safe-global/safe-core-sdk-types @safe-global/protocol-kit @safe-global/api-kit
+   ```
+1. Created Ethers adapter
+
+   > Ethers.js wrapper that contains some utilities and the Safe contracts types (generated with typechain ethers-v5). It is used to initialize the Protocol Kit.
+
+1. Initialize safekit api using https://safe-transaction-base.safe.global/, https://safe-transaction-goerli.safe.global/, https://safe-transaction-optimism.safe.global/
+
+   ```
+
+   ```
 
 ## Layerzero
 
