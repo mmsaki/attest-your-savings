@@ -99,9 +99,9 @@ export default function Home() {
 
     if (factory && safeSdk) {
       factory.innerHTML = `
-			<p>New Safe Address: ${JSON.stringify(newSafeAddress)}</p>
-			<p>Balance: ${JSON.stringify(newSafeBalance)}</p>
-			<p>Safe Owners: ${JSON.stringify(newSafeOwners)}</p>
+			<p>New Safe Address: ${JSON.stringify(newSafeAddress, null, 2)}</p>
+			<p>Balance: ${JSON.stringify(newSafeBalance, null, 2)}</p>
+			<p>Safe Owners: ${JSON.stringify(newSafeOwners, null, 2)}</p>
 			`;
     }
   }
@@ -133,7 +133,7 @@ export default function Home() {
 
     if (txElement && safeTransaction) {
       txElement.innerHTML = `
-			<p>Safe Transaction: ${JSON.stringify(safeTransaction)}</p>
+			<p>Safe Transaction: ${JSON.stringify(safeTransaction, null, 2)}</p>
 			`;
     }
 
@@ -143,7 +143,7 @@ export default function Home() {
 
     if (executeElement && linkElement && txResponse) {
       executeElement.innerHTML = `
-			<p>Executed Tx: ${JSON.stringify(txResponse)}</p>
+			<p>Executed Tx: ${JSON.stringify(txResponse, null, 2)}</p>
 			`;
       linkElement.innerText = "ℹ️ view transaction";
       if (chain?.network === "base-goerli") {
@@ -187,7 +187,7 @@ export default function Home() {
           </Suspense>
         </>
       )}
-      {/* Goerli */}
+      {/* 1. Safe Goerli */}
       {isConnected && chain?.network === "goerli" && (
         <>
           <div className="">
@@ -233,12 +233,12 @@ export default function Home() {
           </div>
         </>
       )}
-      {/* Base Goerli */}
+      {/* 2. Safe Base Goerli */}
       {isConnected && chain?.network === "base-goerli" && (
         <>
-          <div className="">
+          <div className="border p-4">
             <div id="safe-sdk"></div>
-            {/* 2. Deploy New Safe */}
+            {/* 1. Deploy New Safe */}
             <h2>1. Deploy Safe</h2>
             <button
               type="button"
@@ -248,7 +248,7 @@ export default function Home() {
               Create New Safe
             </button>
             <div id="safe-factoy"></div>
-            {/* 3. Create Safe Transaction */}
+            {/* 2. Create Safe Transaction */}
             <h2>2. Create Safe Transaction</h2>
             <button
               type="button"
@@ -257,7 +257,7 @@ export default function Home() {
             >
               Send Transaction
             </button>
-            <div id="safe-transaction"></div>
+            <div id="safe-transaction" className="overflow-x-auto"></div>
             <button
               type="button"
               onClick={() => createTransaction()}
@@ -274,7 +274,11 @@ export default function Home() {
                 rel="noopener noreferrer"
               ></a>
             </div>
-            <div className="text-sky-600" id="execute-transaction"></div>
+            <div
+              className="text-sky-600 overflow-x-auto"
+              id="execute-transaction"
+            ></div>
+            {/* 3. Making Attestations */}
           </div>
         </>
       )}
