@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
 	title: 'Crosschain Savings Accounts',
-	description: 'Save your crypto daily',
+	description: 'Attest your crypto savings',
 };
 
 type LayoutProps = {
