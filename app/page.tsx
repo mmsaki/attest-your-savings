@@ -1,11 +1,16 @@
 "use client";
+import { Suspense } from "react";
 import { useAccount, useNetwork, useWalletClient } from "wagmi";
+import {
+  useSigner,
+  useProvider,
+  walletClientToSigner,
+} from "./hooks/useSigner";
 import UseConnect from "@/app/hooks/UseConnect";
 import UseSwitchNetwork from "@/app/hooks/UseSwitchNetwork";
 import UseBalance from "@/app/hooks/UseBalance";
 import UseToken from "@/app/hooks/UseToken";
 import UseBlockNumber from "@/app/hooks/UseBlockNumber";
-import { Suspense } from "react";
 
 import { ethers } from "ethers";
 import SafeL2, {
@@ -36,8 +41,8 @@ export default function Home() {
   // console.log(safe);
 
   // 0a. Create the EthersAdapter
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const safeOwner = provider.getSigner(0);
+  if (!walletClient) return;
+  const safeOwner = walletClientToSigner(walletClient);
   const ethAdapter = new EthersAdapter({
     ethers,
     signerOrProvider: safeOwner,
