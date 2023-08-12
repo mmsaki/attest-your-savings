@@ -1,3 +1,5 @@
+// thanks to https://docs.attest.sh/docs/getting--started/wagmi
+
 import { type PublicClient, type WalletClient } from "@wagmi/core";
 import { providers } from "ethers";
 import { type HttpTransport } from "viem";
