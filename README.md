@@ -9,7 +9,7 @@
 
    1. Optinonal ability to register attestation schema
 
-1.🐾 Create attestation with saving transactions
+1. 🐾 Create attestation with saving transactions
 
 ## Layerzero
 
