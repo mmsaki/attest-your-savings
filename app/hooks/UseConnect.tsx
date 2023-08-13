@@ -52,6 +52,7 @@ const UseConnect = () => {
 			console.log('Disconnected ->', data);
 		},
 	});
+	
 	return (
 		<>
 			{isConnected && (

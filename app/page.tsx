@@ -410,12 +410,6 @@ export default function Home() {
 
   return (
     <main>
-      <div className="flex flex-col">
-        <UseConnect />
-      </div>
-      <div className="flex flex-col">
-        <UseSwitchNetwork />
-      </div>
       {isConnected && chain?.network === "sepolia" && (
         <>
           <div className="">
