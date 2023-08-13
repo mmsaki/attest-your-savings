@@ -3,51 +3,51 @@ export const navigation = [
     title: "Dashboard",
     icons: "dashboard",
     counter: 16,
-    url: "/dashboard",
+    url: "/my-dashboard",
   },
   {
-    title: "Projects",
+    title: "Attestations",
     icons: "projects",
-    url: "/projects",
+    url: "/my-attestations",
   },
   {
     title: "Tasks",
     icon: "tasks",
-    url: "/projects/tasks",
+    url: "/my-tasks",
   },
   {
-    title: "Layers",
+    title: "Transactions",
     icons: "layers",
-    url: "/projects/layers",
+    url: "/my-transactions",
   },
   {
     title: "Calendar",
     icon: "calendar",
-    url: "/projects/calendar",
+    url: "/my-calendar",
   },
   {
     title: "Inbox",
     icon: "email",
-    url: "/inbox/mail-list",
+    url: "/my-inbox",
   },
 ];
 
 export const mobileNavigation = [
   {
     icon: "dashboard",
-    url: "/dashboard",
+    url: "/my-dashboard",
   },
   {
-    icon: "projects",
-    url: "projects",
+    icon: "attestations",
+    url: "/my-attestations",
   },
   {
     icon: "tasks",
-    url: "/projects/tasks",
+    url: "/my-tasks",
   },
   {
     icon: "layers",
-    url: "projects/layers",
+    url: "/my-transactions",
   },
   {
     icon: "dots",
