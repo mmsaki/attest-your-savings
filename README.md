@@ -1,4 +1,4 @@
-# Crosschain Savings Account
+# 😀 Attest Your Savings
 
 ## Project scope
 
