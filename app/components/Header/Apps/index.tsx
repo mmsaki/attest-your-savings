@@ -25,7 +25,9 @@ const Apps = ({}: AppsProps) => {
         console.log("Success ->", data);
       },
     });
-  console.log("chains", chains);
+
+  console.log("Chain", chain);
+
   return (
     <Menu className="relative mr-7 md:hidden" as="div">
       <Menu.Button className="btn-transparent-dark btn-medium ui-open:text-purple-1 ui-open:fill-purple-1">
@@ -63,12 +65,12 @@ const Apps = ({}: AppsProps) => {
                 {isLoading && pendingChainId === link.id && " (switching)"}
               </Menu.Item>
             ))}
+            {chain === undefined && <p>Not Connected</p>}
           </div>
           {chain && (
             <>
               <button className="w-full h-13 border-t border-n-1 text-base font-bold transition-colors hover:text-purple-1 dark:border-white">
                 Connected to {chain.name}
-                {" (ChainId " + chain.id + ")"}
               </button>
               <div>{error && (error?.message ?? "Failed to switch")}</div>
             </>

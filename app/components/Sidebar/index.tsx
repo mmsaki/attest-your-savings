@@ -6,11 +6,15 @@ import Logo from "../Logo";
 import Image from "../Image";
 import Icon from "../Icon";
 import Menu from "./Menu";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 
 type SidebarProps = {};
 
 const Sidebar = ({}: SidebarProps) => {
   const [visible, setVisible] = useState<boolean>(false);
+  const { chain } = useNetwork();
+  const { chains, error, isLoading, pendingChainId, switchNetwork, status } =
+    useSwitchNetwork();
 
   return (
     <div
@@ -34,21 +38,14 @@ const Sidebar = ({}: SidebarProps) => {
           className={`inline-flex items-center font-bold text-white text-sm transition-colors hover:text-purple-1 ${
             visible ? "mx-0 text-sm" : "xl:mx-auto xl:text-0"
           }`}
-          href="/profile"
+          href="/"
         >
           <div
             className={`relative w-5.5 h-5.5 mr-2.5 rounded-full overflow-hidden ${
               visible ? "mr-2.5" : "xl:mr-0"
             }`}
-          >
-            <Image
-              className="object-cover scale-105"
-              src="/images/avatars/avatar.jpg"
-              fill
-              alt="Avatar"
-            />
-          </div>
-          Henry Richardson
+          ></div>
+          {chain ? chain?.name + " " + chain?.id + " 🟢 " : "Not Connected 🔴"}
         </Link>
         <button
           className={`btn-transparent-light btn-square btn-small ml-auto ${
