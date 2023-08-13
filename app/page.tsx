@@ -43,8 +43,6 @@ const network = "goerli";
 const owner1 = "0xFE948CB2122FDD87bAf43dCe8aFa254B1242c199";
 const owner2 = "0xc5Bfc2fc66F3d1E34B2772dA07f39358De0377f3";
 const owner3 = "0x6D490b1281579ad14c8d760c1D47d812a81193b2";
-// const safeAddress = "0xfa616b2F374665C9ECfEa1D29c1cfB488d5e7136"; // goerli
-const safeAddress = "0x60C49Dad2C19A3C019b7275C131404A35A31EB5C"; // base-goerli
 
 export default function Home() {
   const { address, isConnected } = useAccount();
@@ -54,22 +52,35 @@ export default function Home() {
   const provider = useProvider();
   const signer = useSigner();
 
-  // 0a. Create the EthersAdapter
-  if (!walletClient) return;
-  const safeOwner = walletClientToSigner(walletClient);
-  const ethAdapter = new EthersAdapter({
-    ethers,
-    signerOrProvider: safeOwner,
-  });
-
-  // 0b. Initialize the safe api kit
-  const txServiceUrl = `https://safe-transaction-${network}.safe.global`;
-  const safeService = new SafeApiKit({ txServiceUrl, ethAdapter });
-
   // 1. View Safe
   async function getGoerliSafe() {
+    let network;
+    let safeAddress;
+    if (!chain) return;
+    if (chain.network === "goerli") {
+      safeAddress = "0xfa616b2F374665C9ECfEa1D29c1cfB488d5e7136"; // goerli
+      network = "goerli";
+    } else if (chain.network === "base-goerli") {
+      safeAddress = "0x60C49Dad2C19A3C019b7275C131404A35A31EB5C"; // base-goerli
+      network = "base-goerli";
+    }
+    // 0a. Create the EthersAdapter
+    console.log("wallet Client", walletClient);
+    if (!walletClient) return;
+    const safeOwner = walletClientToSigner(walletClient);
+    const ethAdapter = new EthersAdapter({
+      ethers,
+      signerOrProvider: safeOwner,
+    });
+
+    // 0b. Initialize the safe api kit
+    const txServiceUrl = `https://safe-transaction-${network}.safe.global`;
+    if (!ethAdapter) return;
+    const safeService = new SafeApiKit({ txServiceUrl, ethAdapter });
+
     var safe: HTMLElement | null = document.getElementById("safe-sdk");
 
+    if (!safeAddress) return;
     const mySafe = await safeService.getSafeInfo(safeAddress);
     console.log("My Safe ==> ", mySafe);
 
@@ -89,6 +100,17 @@ export default function Home() {
   async function createNewSafe() {
     var factory: HTMLElement | null = document.getElementById("safe-factory");
 
+    // 0a. Create the EthersAdapter
+    console.log("wallet Client", walletClient);
+    if (!walletClient) return;
+    const safeOwner = walletClientToSigner(walletClient);
+    const ethAdapter = new EthersAdapter({
+      ethers,
+      signerOrProvider: safeOwner,
+    });
+
+    // 0b. Initialize the safe api kit
+    const txServiceUrl = `https://safe-transaction-${network}.safe.global`;
     const safeFactory = await SafeFactory.create({ ethAdapter });
 
     const owners = [owner1, owner2, owner3];
@@ -129,6 +151,22 @@ export default function Home() {
     );
     var linkElement: HTMLElement | null = document.getElementById("tx-link");
 
+    let safeAddress;
+    if (!chain) return;
+    if (chain.network === "goerli") {
+      safeAddress = "0xfa616b2F374665C9ECfEa1D29c1cfB488d5e7136"; // goerli
+    } else if (chain.network === "base-goerli") {
+      safeAddress = "0x60C49Dad2C19A3C019b7275C131404A35A31EB5C"; // base-goerli
+    }
+
+    if (!walletClient) return;
+    const safeOwner = walletClientToSigner(walletClient);
+    const ethAdapter = new EthersAdapter({
+      ethers,
+      signerOrProvider: safeOwner,
+    });
+
+    if (!safeAddress || !ethAdapter) return;
     const safeSdk: Safe = await Safe.create({
       ethAdapter: ethAdapter,
       safeAddress,
@@ -199,7 +237,7 @@ export default function Home() {
       SchemaRegistryContractAddress =
         "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E";
       uid =
-        "0x5e558a5544775166c8f9d354a552b1c5a31a535653b88dd6f6323e3ccb45cd35";
+        "0xee01e26c01ee186d3cb2e5e9f959b8ebadd642110000046954e87ab132c5938f";
     }
 
     if (EASContractAddress && SchemaRegistryContractAddress) {
@@ -295,22 +333,33 @@ export default function Home() {
   async function createAttestation() {
     var newAttestationElement: HTMLElement | null =
       document.getElementById("new-attestation");
+    var newAttestationTxElement: HTMLElement | null =
+      document.getElementById("new-attestation-tx");
+
+    let safeAddress;
+    let network;
     let EASContractAddress;
     let uid;
     let eas;
     let schemaRegistry;
+
     if (!chain) return;
-    if (chain.network === "sepolia") {
+    if (chain.network === "goerli") {
+      network = "goerli";
+      safeAddress = "0xfa616b2F374665C9ECfEa1D29c1cfB488d5e7136"; // goerli
+    } else if (chain.network === "base-goerli") {
+      network = "base-goerli";
+      safeAddress = "0x60C49Dad2C19A3C019b7275C131404A35A31EB5C"; // base-goerli
+      EASContractAddress = "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A"; // base-goeli v0.27
+      uid =
+        "0x1f068dfdd592c27617c573d5f669c3f9367113c8cb3231afe6b06bb2839f12c4";
+    } else if (chain.network === "sepolia") {
+      network = "sepolia";
       EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // sepolia v0.26
       uid =
         "0x5c308a858c3289f7a8756bd66f5aab60691b71fdac2cd9d9555c6cd0d0d8b1ce";
     }
 
-    if (chain.network === "base-goerli") {
-      EASContractAddress = "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A"; // base-goeli v0.27
-      uid =
-        "0x1f068dfdd592c27617c573d5f669c3f9367113c8cb3231afe6b06bb2839f12c4";
-    }
     if (!EASContractAddress) return;
     eas = new EAS(EASContractAddress);
     if (!eas) return;
@@ -329,11 +378,11 @@ export default function Home() {
       { name: "amount", value: 100, type: "uint256" },
     ]);
 
-    if (!uid) return;
+    if (!uid || !safeAddress) return;
     const tx = await eas.attest({
       schema: uid,
       data: {
-        recipient: owner1,
+        recipient: safeAddress,
         expirationTime: BigInt(0),
         revocable: true, // Be aware that if your schema is not revocable, this MUST be false
         data: encodedData,
@@ -342,11 +391,20 @@ export default function Home() {
 
     const newAttestationUID = await tx.wait();
     console.log("New attestation UID:", newAttestationUID);
+    console.log(
+      "🧾 Attestation Tx:",
+      `https://${network}.easscan.org/attestation/view/${newAttestationUID}`
+    );
 
-    if (newAttestationElement && newAttestationUID) {
+    if (newAttestationElement && newAttestationUID && newAttestationTxElement) {
       newAttestationElement.innerHTML = `
-      <p>😀 New Attestation ${newAttestationUID}</p>
+      <p>Attestation UID ${newAttestationUID}</p>
       `;
+      newAttestationTxElement.innerText = "🧾 Confirm Transaction";
+      newAttestationTxElement.setAttribute(
+        "href",
+        `https://${network}.easscan.org/attestation/view/${newAttestationUID}`
+      );
     }
   }
 
@@ -376,143 +434,124 @@ export default function Home() {
           </Suspense>
         </>
       )}
-      {/* 1. Safe Goerli */}
-      {isConnected && chain?.network === "goerli" && (
-        <>
-          <div className="">
-            {/* 1. View Safe */}
-            <h1 className="bold text-2xl">Goerli Safe 🏦</h1>
-            <h2 className="bold">1. View Safes</h2>
-            <button
-              type="button"
-              onClick={() => getGoerliSafe()}
-              className="bg-red-100 px-1"
-            >
-              View Safe
-            </button>
-            <div id="safe-sdk"></div>
-            {/* 2. Deploy New Safe */}
-            <h2>2. Deploy Safe</h2>
-            <button
-              type="button"
-              onClick={() => createNewSafe()}
-              className="bg-red-100 px-1"
-            >
-              Create New Safe
-            </button>
-            <div id="safe-factoy"></div>
-            {/* 3. Create Safe Transaction */}
-            <h2>2. Create Safe Transaction</h2>
-            <button
-              type="button"
-              onClick={() => createTransaction()}
-              className="bg-red-100 px-1"
-            >
-              Send Transaction
-            </button>
-            <div id="safe-transaction"></div>
-            <button
-              type="button"
-              onClick={() => createTransaction()}
-              className="bg-red-100 px-1"
-            >
-              3. Execute Transaction
-            </button>
-            <div className="text-sky-500" id="execute-transaction"></div>
-          </div>
-        </>
-      )}
-      {/* 2. Safe Base Goerli */}
-      {isConnected && (chain?.network === "base-goerli" || "sepolia") && (
-        <>
-          <div className="border p-4">
-            <div id="safe-sdk"></div>
-            {/* 1. Deploy New Safe */}
-            <h2>1. Deploy Safe</h2>
-            <button
-              type="button"
-              onClick={() => createNewSafe()}
-              className="bg-red-100 px-1"
-            >
-              🏦 Create New Safe
-            </button>
-            <div id="safe-factoy"></div>
-            {/* 2. Create Safe Transaction */}
-            <h2>2. Create Safe Transaction</h2>
-            <button
-              type="button"
-              onClick={() => createTransaction()}
-              className="bg-red-100 px-1"
-            >
-              Send Transaction
-            </button>
-            <h1>3. Execute Safe Tranaction</h1>
-            <div id="safe-transaction" className="overflow-x-auto"></div>
-            <button
-              type="button"
-              onClick={() => createTransaction()}
-              className="bg-red-100 px-1"
-            >
-              Execute Transaction
-            </button>
-            <div>
-              <a
-                id="tx-link"
-                href=""
-                className="text-sky-600 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              ></a>
-            </div>
-            <div
-              className="text-sky-600 overflow-x-auto"
-              id="execute-transaction"
-            ></div>
+      {/* 1. Base Goerli */}
+      {isConnected &&
+        (chain?.network === "base-goerli" || "sepolia" || "goerli") && (
+          <>
+            <div className="border p-4">
+              {/* 1. Deploy New Safe */}
+              <h2>1. Deploy Safe</h2>
+              <button
+                type="button"
+                onClick={() => createNewSafe()}
+                className="bg-red-100 px-1"
+              >
+                🏦 Create New Safe
+              </button>
+              <div
+                id="safe-factoy"
+                className="text-green-700 overflow-x-auto"
+              ></div>
+              {/* 2. View Safe */}
+              <h2 className="bold">2. View Safes</h2>
+              <button
+                type="button"
+                onClick={() => getGoerliSafe()}
+                className="bg-red-100 px-1"
+              >
+                View Safe
+              </button>
+              <div id="safe-sdk" className="overflow-x-auto"></div>
+              {/* 3. Create Safe Transaction */}
+              <h2>3. Create Safe Transaction</h2>
+              <button
+                type="button"
+                onClick={() => createTransaction()}
+                className="bg-red-100 px-1"
+              >
+                Send Transaction
+              </button>
+              {/* 4. Execute transactions */}
+              <h1>4. Execute Safe Tranaction</h1>
+              <div id="safe-transaction" className="overflow-x-auto"></div>
+              <button
+                type="button"
+                onClick={() => createTransaction()}
+                className="bg-red-100 px-1"
+              >
+                Execute Transaction
+              </button>
+              <div>
+                <a
+                  id="tx-link"
+                  href=""
+                  className="text-sky-600 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ></a>
+              </div>
+              <div
+                className="text-sky-600 overflow-x-auto"
+                id="execute-transaction"
+              ></div>
 
-            {/* 4. Making Attestations */}
-            <h1 className="text=2xl">4. Attestations</h1>
-            <button
-              type="button"
-              onClick={() => getAttestation()}
-              className="bg-red-100 px-1"
-            >
-              Get Attestation
-            </button>
-            <div id="get-attestation" className="overflow-scroll"></div>
-            <h1>5. Register Schema</h1>
-            <button
-              type="button"
-              onClick={() => registerSchema()}
-              className="bg-red-100 px-1"
-            >
-              Register Schema
-            </button>
-            <div>
-              <a
-                href=""
-                id="resiger-schema-tx"
-                className="text-sky-600 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              ></a>
+              {/* 5. Making Attestations */}
+              <h1 className="text=2xl">5. Make Attestations</h1>
+              <button
+                type="button"
+                onClick={() => getAttestation()}
+                className="bg-red-100 px-1"
+              >
+                Get Attestation
+              </button>
+              <div id="get-attestation" className="overflow-scroll"></div>
+              {/* 6. Register Schema */}
+              <h1>6. Register Schema</h1>
+              <button
+                type="button"
+                onClick={() => registerSchema()}
+                className="bg-red-100 px-1"
+              >
+                Register Schema
+              </button>
+              <div>
+                <a
+                  href=""
+                  id="resiger-schema-tx"
+                  className="text-sky-600 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ></a>
+              </div>
+              <div
+                id="register-schema"
+                className="text-sky-600 overflow-x-auto"
+              ></div>
+              {/* 7. Create Attesation */}
+              <h1>7. Create Attestation</h1>
+              <button
+                type="button"
+                onClick={() => createAttestation()}
+                className="bg-red-100 px-1"
+              >
+                🐾 Attest!
+              </button>
+              <div
+                id="new-attestation"
+                className="text-green-700 overflow-x-auto"
+              ></div>
+              <div>
+                <a
+                  href=""
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  id="new-attestation-tx"
+                  className="text-sky-700 hover:underline"
+                ></a>
+              </div>
             </div>
-            <div
-              id="register-schema"
-              className="text-sky-600 overflow-x-auto"
-            ></div>
-            {/* 4. Create Attesation */}
-            <h1>4. Create Attestation</h1>
-            <button
-              type="button"
-              onClick={() => createAttestation()}
-              className="bg-red-100 px-1"
-            >
-              🐾 Attest!
-            </button>
-            <div id="new-attestation"></div>
-          </div>
-        </>
-      )}
+          </>
+        )}
     </main>
   );
 }
