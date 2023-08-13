@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ChangeEvent } from "react";
 import Layout from "../components/Layout";
 import Image from "../components/Image";
@@ -30,6 +31,11 @@ import SafeApiKit from "@safe-global/api-kit";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import Safe from "@safe-global/protocol-kit";
 import { SafeTransactionDataPartial } from "@safe-global/safe-core-sdk-types";
+import {
+  EAS,
+  SchemaEncoder,
+  SchemaRegistry,
+} from "@ethereum-attestation-service/eas-sdk";
 
 type DetailsProps = {
   hash: string;
@@ -62,7 +68,7 @@ type DetailsProps = {
   };
 };
 
-export const transactionDetails = [
+const transactionDetails = [
   {
     title: "Hash",
     value: "",
@@ -114,12 +120,6 @@ export const transactionDetails = [
 ];
 
 // 3. EAS
-import {
-  EAS,
-  SchemaEncoder,
-  SchemaRegistry,
-} from "@ethereum-attestation-service/eas-sdk";
-import { useEffect, useState } from "react";
 
 const network = "goerli";
 const owner1 = "0xFE948CB2122FDD87bAf43dCe8aFa254B1242c199";
@@ -317,11 +317,11 @@ const CryptoTransactionPage = () => {
     }
   }
 
-  useEffect(() => {
-    // setLogTx;
-    writeElements();
-    console.log(logTx);
-  }, [logTx]);
+  // useEffect(() => {
+  //   // setLogTx;
+  //   writeElements();
+  //   console.log(logTx);
+  // }, []);
 
   // 3. EAS
   async function getAttestation() {
