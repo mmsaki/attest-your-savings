@@ -191,7 +191,7 @@ export default function Home() {
       SchemaRegistryContractAddress =
         "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0";
       uid =
-        "0x5c308a858c3289f7a8756bd66f5aab60691b71fdac2cd9d9555c6cd0d0d8b1ce";
+        "0xda9d6436541a774dc7a0b990e22c7dc2b6db70c9780e8bae7da0e5ca6e88ba31";
     }
 
     if (chain.network === "base-goerli") {
@@ -199,7 +199,7 @@ export default function Home() {
       SchemaRegistryContractAddress =
         "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E";
       uid =
-        "0x1f068dfdd592c27617c573d5f669c3f9367113c8cb3231afe6b06bb2839f12c4";
+        "0x5e558a5544775166c8f9d354a552b1c5a31a535653b88dd6f6323e3ccb45cd35";
     }
 
     if (EASContractAddress && SchemaRegistryContractAddress) {
@@ -208,7 +208,7 @@ export default function Home() {
     }
 
     if (!publicClient) return;
-    const provider = publicClientToProvider(publicClient);
+    // const provider = publicClientToProvider(publicClient);
     // @ts-ignore
     eas.connect(provider);
     console.log("uid", uid);
@@ -253,6 +253,7 @@ export default function Home() {
     const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
     // @ts-ignore
     schemaRegistry.connect(signer);
+
     const schema = "bytes txHash, uint256 amount";
     const revocable = true;
     const transaction = await schemaRegistry.register({
@@ -291,7 +292,63 @@ export default function Home() {
     }
   }
 
-  async function createAttestation() {}
+  async function createAttestation() {
+    var newAttestationElement: HTMLElement | null =
+      document.getElementById("new-attestation");
+    let EASContractAddress;
+    let uid;
+    let eas;
+    let schemaRegistry;
+    if (!chain) return;
+    if (chain.network === "sepolia") {
+      EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // sepolia v0.26
+      uid =
+        "0x5c308a858c3289f7a8756bd66f5aab60691b71fdac2cd9d9555c6cd0d0d8b1ce";
+    }
+
+    if (chain.network === "base-goerli") {
+      EASContractAddress = "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A"; // base-goeli v0.27
+      uid =
+        "0x1f068dfdd592c27617c573d5f669c3f9367113c8cb3231afe6b06bb2839f12c4";
+    }
+    if (!EASContractAddress) return;
+    eas = new EAS(EASContractAddress);
+    if (!eas) return;
+    // @ts-ignore
+    eas.connect(signer);
+
+    // Initialize SchemaEncoder with the schema string
+    const schemaEncoder = new SchemaEncoder("bytes txHash, uint256 amount");
+    const encodedData = schemaEncoder.encodeData([
+      {
+        name: "txHash",
+        value:
+          "0x2f50e4c0d6578e53596e20e1699f4a0d1f8cf7edfbf4d04324f65ee43b1bd257",
+        type: "bytes",
+      },
+      { name: "amount", value: 100, type: "uint256" },
+    ]);
+
+    if (!uid) return;
+    const tx = await eas.attest({
+      schema: uid,
+      data: {
+        recipient: owner1,
+        expirationTime: BigInt(0),
+        revocable: true, // Be aware that if your schema is not revocable, this MUST be false
+        data: encodedData,
+      },
+    });
+
+    const newAttestationUID = await tx.wait();
+    console.log("New attestation UID:", newAttestationUID);
+
+    if (newAttestationElement && newAttestationUID) {
+      newAttestationElement.innerHTML = `
+      <p>😀 New Attestation ${newAttestationUID}</p>
+      `;
+    }
+  }
 
   return (
     <main>
@@ -359,7 +416,7 @@ export default function Home() {
               onClick={() => createTransaction()}
               className="bg-red-100 px-1"
             >
-              Execute Transaction
+              3. Execute Transaction
             </button>
             <div className="text-sky-500" id="execute-transaction"></div>
           </div>
@@ -377,7 +434,7 @@ export default function Home() {
               onClick={() => createNewSafe()}
               className="bg-red-100 px-1"
             >
-              Create New Safe
+              🏦 Create New Safe
             </button>
             <div id="safe-factoy"></div>
             {/* 2. Create Safe Transaction */}
@@ -389,6 +446,7 @@ export default function Home() {
             >
               Send Transaction
             </button>
+            <h1>3. Execute Safe Tranaction</h1>
             <div id="safe-transaction" className="overflow-x-auto"></div>
             <button
               type="button"
@@ -410,8 +468,9 @@ export default function Home() {
               className="text-sky-600 overflow-x-auto"
               id="execute-transaction"
             ></div>
-            {/* 3. Making Attestations */}
-            <h1 className="text=2xl">Attestations</h1>
+
+            {/* 4. Making Attestations */}
+            <h1 className="text=2xl">4. Attestations</h1>
             <button
               type="button"
               onClick={() => getAttestation()}
@@ -420,6 +479,7 @@ export default function Home() {
               Get Attestation
             </button>
             <div id="get-attestation" className="overflow-scroll"></div>
+            <h1>5. Register Schema</h1>
             <button
               type="button"
               onClick={() => registerSchema()}
@@ -447,8 +507,9 @@ export default function Home() {
               onClick={() => createAttestation()}
               className="bg-red-100 px-1"
             >
-              Attest!
+              🐾 Attest!
             </button>
+            <div id="new-attestation"></div>
           </div>
         </>
       )}
