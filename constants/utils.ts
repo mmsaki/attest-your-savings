@@ -29,29 +29,3 @@ export const productCategories = [
     path: "/my-dashboard",
   },
 ];
-
-export const topCommunityPosts = [
-  {
-    id: "0",
-    title:
-      "Waiting period for first payout on our fintech platform for marketplaces",
-    date: "31 Dec 2023",
-    category: "Payments",
-    icon: "/images/email-attach.svg",
-  },
-  {
-    id: "1",
-    title: "Strong Customer Authentication-related preparations for businesses",
-    date: "04 Sep 2023",
-    category: "Account and settings",
-    icon: "/images/clock.svg",
-  },
-  {
-    id: "2",
-    title:
-      "Security, permissions, and access levels when connecting your account",
-    date: "1 Feb 2023",
-    category: "Payments",
-    icon: "/images/chart-fill.svg",
-  },
-];

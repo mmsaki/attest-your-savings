@@ -1,9 +1,9 @@
 export const navigation = [
   {
-    title: "Dashboard",
+    title: "My Safe",
     icons: "dashboard",
     counter: 16,
-    url: "/my-dashboard",
+    url: "/my-safe",
   },
   {
     title: "Attestations",
@@ -34,8 +34,8 @@ export const navigation = [
 
 export const mobileNavigation = [
   {
-    icon: "dashboard",
-    url: "/my-dashboard",
+    icon: "My Safe",
+    url: "/my-safe",
   },
   {
     icon: "attestations",
