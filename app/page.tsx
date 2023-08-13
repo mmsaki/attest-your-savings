@@ -434,6 +434,7 @@ export default function Home() {
           </Suspense>
         </>
       )}
+
       {/* 1. Base Goerli */}
       {isConnected &&
         (chain?.network === "base-goerli" || "sepolia" || "goerli") && (
