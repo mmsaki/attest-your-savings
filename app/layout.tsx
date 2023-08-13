@@ -26,10 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Layout title="Attest your savings">
-            <Menu />
-            <div>{children}</div>
-          </Layout>
+          <div>{children}</div>
         </Providers>
       </body>
     </html>

@@ -1,5 +1,6 @@
 "use client";
 import { Suspense } from "react";
+import Layout from "./components/Layout";
 import {
   useAccount,
   useNetwork,
@@ -411,7 +412,7 @@ export default function Home() {
   }
 
   return (
-    <main>
+    <Layout title="Home">
       <div className="flex flex-wrap -mt-2.5 -mx-2.5 mb-8 lg:block lg:mx-0">
         {productCategories.map((category) => (
           <Category item={category} key={category.id} />
@@ -554,6 +555,6 @@ export default function Home() {
             </div>
           </>
         )}
-    </main>
+    </Layout>
   );
 }

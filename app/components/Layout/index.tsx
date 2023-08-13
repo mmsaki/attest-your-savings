@@ -16,7 +16,7 @@ const Layout = ({ background, back, title, children }: LayoutProps) => {
   return (
     <>
       <Head>
-        <title>Bruddle</title>
+        <title>Attest Your Savings</title>
       </Head>
       <div className="relative pl-[18.75rem] xl:pl-20 md:pl-0 md:pb-20">
         <Sidebar />
