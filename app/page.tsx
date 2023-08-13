@@ -1,12 +1,24 @@
 "use client";
-import { useAccount, useNetwork, useWalletClient } from "wagmi";
+import { Suspense } from "react";
+import {
+  useAccount,
+  useNetwork,
+  usePublicClient,
+  useWalletClient,
+} from "wagmi";
+import {
+  useSigner,
+  useProvider,
+  walletClientToSigner,
+  publicClientToProvider,
+} from "./hooks/useSigner";
 import UseConnect from "@/app/hooks/UseConnect";
 import UseSwitchNetwork from "@/app/hooks/UseSwitchNetwork";
 import UseBalance from "@/app/hooks/UseBalance";
 import UseToken from "@/app/hooks/UseToken";
 import UseBlockNumber from "@/app/hooks/UseBlockNumber";
-import { Suspense } from "react";
 
+// 2. Safe SDK
 import { ethers } from "ethers";
 import SafeL2, {
   EthersAdapter,
@@ -19,6 +31,14 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import Safe from "@safe-global/protocol-kit";
 import { SafeTransactionDataPartial } from "@safe-global/safe-core-sdk-types";
 
+// 3. EAS
+import {
+  EAS,
+  Offchain,
+  SchemaEncoder,
+  SchemaRegistry,
+} from "@ethereum-attestation-service/eas-sdk";
+
 const network = "goerli";
 const owner1 = "0xFE948CB2122FDD87bAf43dCe8aFa254B1242c199";
 const owner2 = "0xc5Bfc2fc66F3d1E34B2772dA07f39358De0377f3";
@@ -30,14 +50,13 @@ export default function Home() {
   const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
   const { data: walletClient, isError, isLoading } = useWalletClient();
-  // const { sdk, safe } = useSafeAppsSDK();
-
-  // const safeAddress = safe.safeAddress;
-  // console.log(safe);
+  const publicClient = usePublicClient();
+  const provider = useProvider();
+  const signer = useSigner();
 
   // 0a. Create the EthersAdapter
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const safeOwner = provider.getSigner(0);
+  if (!walletClient) return;
+  const safeOwner = walletClientToSigner(walletClient);
   const ethAdapter = new EthersAdapter({
     ethers,
     signerOrProvider: safeOwner,
@@ -94,9 +113,9 @@ export default function Home() {
 
     if (factory && safeSdk) {
       factory.innerHTML = `
-			<p>New Safe Address: ${JSON.stringify(newSafeAddress)}</p>
-			<p>Balance: ${JSON.stringify(newSafeBalance)}</p>
-			<p>Safe Owners: ${JSON.stringify(newSafeOwners)}</p>
+			<p>New Safe Address: ${JSON.stringify(newSafeAddress, null, 2)}</p>
+			<p>Balance: ${JSON.stringify(newSafeBalance, null, 2)}</p>
+			<p>Safe Owners: ${JSON.stringify(newSafeOwners, null, 2)}</p>
 			`;
     }
   }
@@ -128,7 +147,7 @@ export default function Home() {
 
     if (txElement && safeTransaction) {
       txElement.innerHTML = `
-			<p>Safe Transaction: ${JSON.stringify(safeTransaction)}</p>
+			<p>Safe Transaction: ${JSON.stringify(safeTransaction, null, 2)}</p>
 			`;
     }
 
@@ -138,9 +157,9 @@ export default function Home() {
 
     if (executeElement && linkElement && txResponse) {
       executeElement.innerHTML = `
-			<p>Executed Tx: ${JSON.stringify(txResponse)}</p>
+			<p>Executed Tx: ${JSON.stringify(txResponse, null, 2)}</p>
 			`;
-      linkElement.innerText = "ℹ️ view transaction";
+      linkElement.innerText = "🧾 view transaction";
       if (chain?.network === "base-goerli") {
         linkElement.setAttribute(
           "href",
@@ -153,6 +172,181 @@ export default function Home() {
           `https://goerli.etherscan.io/tx/${txResponse.hash}`
         );
       }
+    }
+  }
+
+  // 3. EAS
+  async function getAttestation() {
+    var getAttestationElement: HTMLElement | null =
+      document.getElementById("get-attestation");
+
+    let EASContractAddress;
+    let SchemaRegistryContractAddress;
+    let uid;
+    let eas;
+    let schemaRegistry;
+    if (!chain) return;
+    if (chain.network === "sepolia") {
+      EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // sepolia v0.26
+      SchemaRegistryContractAddress =
+        "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0";
+      uid =
+        "0xda9d6436541a774dc7a0b990e22c7dc2b6db70c9780e8bae7da0e5ca6e88ba31";
+    }
+
+    if (chain.network === "base-goerli") {
+      EASContractAddress = "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A"; // base-goeli v0.27
+      SchemaRegistryContractAddress =
+        "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E";
+      uid =
+        "0x5e558a5544775166c8f9d354a552b1c5a31a535653b88dd6f6323e3ccb45cd35";
+    }
+
+    if (EASContractAddress && SchemaRegistryContractAddress) {
+      eas = new EAS(EASContractAddress);
+      schemaRegistry = new SchemaRegistry(SchemaRegistryContractAddress);
+    }
+
+    if (!publicClient) return;
+    // const provider = publicClientToProvider(publicClient);
+    // @ts-ignore
+    eas.connect(provider);
+    console.log("uid", uid);
+
+    if (!eas || !uid) return;
+    const attestation = await eas.getAttestation(uid);
+    console.log(attestation);
+
+    console.log(schemaRegistry);
+    if (!schemaRegistry) return;
+    // const schemaRecord = await schemaRegistry.getSchema({ uid });
+    // console.log(schemaRecord);
+
+    if (getAttestationElement && attestation) {
+      getAttestationElement.innerHTML = `
+      <p>🐾 Attestation: ${JSON.stringify(attestation)}</p>
+      `;
+    }
+  }
+
+  // 4. Create Schema
+  async function registerSchema() {
+    var registerElement: HTMLElement | null =
+      document.getElementById("register-schema");
+    var registerSchemaTxElement: HTMLElement | null =
+      document.getElementById("resiger-schema-tx");
+
+    let schemaRegistryContractAddress;
+    let resolverAddress;
+
+    if (chain?.network === "base-goerli") {
+      schemaRegistryContractAddress =
+        "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E"; // base-goerli v0.27
+    }
+    if (chain?.network === "sepolia") {
+      resolverAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0"; // Sepolia 0.26
+      schemaRegistryContractAddress =
+        "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0"; // Sepolia 0.26
+    }
+
+    if (!schemaRegistryContractAddress) return;
+    const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
+    // @ts-ignore
+    schemaRegistry.connect(signer);
+
+    const schema = "bytes txHash, uint256 amount";
+    const revocable = true;
+    const transaction = await schemaRegistry.register({
+      schema,
+      resolverAddress,
+      revocable,
+    });
+
+    await transaction.wait();
+    console.log("🧾 Created Schema: ", transaction);
+
+    if (registerElement && registerSchemaTxElement && transaction) {
+      registerElement.innerHTML = `
+      <p>📚 Schema: ${JSON.stringify(transaction)}</p>
+      `;
+      registerSchemaTxElement.innerHTML = "🧾 view transaction";
+      if (!chain) return;
+      if (chain.network === "base-goerli") {
+        registerSchemaTxElement.setAttribute(
+          "href",
+          `https://goerli.basescan.org/tx/${transaction.tx.hash}`
+        );
+      }
+      if (chain.network === "goerli") {
+        registerSchemaTxElement.setAttribute(
+          "href",
+          `https://goerli.etherscan.io/tx/${transaction.tx.hash}`
+        );
+      }
+      if (chain.network === "sepolia") {
+        registerSchemaTxElement.setAttribute(
+          "href",
+          `https://sepolia.etherscan.io/tx/${transaction.tx.hash}`
+        );
+      }
+    }
+  }
+
+  async function createAttestation() {
+    var newAttestationElement: HTMLElement | null =
+      document.getElementById("new-attestation");
+    let EASContractAddress;
+    let uid;
+    let eas;
+    let schemaRegistry;
+    if (!chain) return;
+    if (chain.network === "sepolia") {
+      EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // sepolia v0.26
+      uid =
+        "0x5c308a858c3289f7a8756bd66f5aab60691b71fdac2cd9d9555c6cd0d0d8b1ce";
+    }
+
+    if (chain.network === "base-goerli") {
+      EASContractAddress = "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A"; // base-goeli v0.27
+      uid =
+        "0x1f068dfdd592c27617c573d5f669c3f9367113c8cb3231afe6b06bb2839f12c4";
+    }
+    if (!EASContractAddress) return;
+    eas = new EAS(EASContractAddress);
+    if (!eas) return;
+    // @ts-ignore
+    eas.connect(signer);
+
+    // Initialize SchemaEncoder with the schema string
+    const schemaEncoder = new SchemaEncoder("bytes txHash, uint256 amount");
+    const encodedData = schemaEncoder.encodeData([
+      {
+        name: "txHash",
+        value:
+          "0x2f50e4c0d6578e53596e20e1699f4a0d1f8cf7edfbf4d04324f65ee43b1bd257",
+        type: "bytes",
+      },
+      { name: "amount", value: 100, type: "uint256" },
+    ]);
+
+    if (!uid) return;
+    const tx = await eas.attest({
+      schema: uid,
+      data: {
+        recipient: owner1,
+        expirationTime: BigInt(0),
+        revocable: true, // Be aware that if your schema is not revocable, this MUST be false
+        data: encodedData,
+      },
+    });
+
+    const newAttestationUID = await tx.wait();
+    console.log("New attestation UID:", newAttestationUID);
+
+    if (newAttestationElement && newAttestationUID) {
+      newAttestationElement.innerHTML = `
+      <p>😀 New Attestation ${newAttestationUID}</p>
+      `;
     }
   }
 
@@ -182,7 +376,7 @@ export default function Home() {
           </Suspense>
         </>
       )}
-      {/* Goerli */}
+      {/* 1. Safe Goerli */}
       {isConnected && chain?.network === "goerli" && (
         <>
           <div className="">
@@ -222,28 +416,28 @@ export default function Home() {
               onClick={() => createTransaction()}
               className="bg-red-100 px-1"
             >
-              Execute Transaction
+              3. Execute Transaction
             </button>
             <div className="text-sky-500" id="execute-transaction"></div>
           </div>
         </>
       )}
-      {/* Base Goerli */}
-      {isConnected && chain?.network === "base-goerli" && (
+      {/* 2. Safe Base Goerli */}
+      {isConnected && (chain?.network === "base-goerli" || "sepolia") && (
         <>
-          <div className="">
+          <div className="border p-4">
             <div id="safe-sdk"></div>
-            {/* 2. Deploy New Safe */}
+            {/* 1. Deploy New Safe */}
             <h2>1. Deploy Safe</h2>
             <button
               type="button"
               onClick={() => createNewSafe()}
               className="bg-red-100 px-1"
             >
-              Create New Safe
+              🏦 Create New Safe
             </button>
             <div id="safe-factoy"></div>
-            {/* 3. Create Safe Transaction */}
+            {/* 2. Create Safe Transaction */}
             <h2>2. Create Safe Transaction</h2>
             <button
               type="button"
@@ -252,7 +446,8 @@ export default function Home() {
             >
               Send Transaction
             </button>
-            <div id="safe-transaction"></div>
+            <h1>3. Execute Safe Tranaction</h1>
+            <div id="safe-transaction" className="overflow-x-auto"></div>
             <button
               type="button"
               onClick={() => createTransaction()}
@@ -269,7 +464,52 @@ export default function Home() {
                 rel="noopener noreferrer"
               ></a>
             </div>
-            <div className="text-sky-600" id="execute-transaction"></div>
+            <div
+              className="text-sky-600 overflow-x-auto"
+              id="execute-transaction"
+            ></div>
+
+            {/* 4. Making Attestations */}
+            <h1 className="text=2xl">4. Attestations</h1>
+            <button
+              type="button"
+              onClick={() => getAttestation()}
+              className="bg-red-100 px-1"
+            >
+              Get Attestation
+            </button>
+            <div id="get-attestation" className="overflow-scroll"></div>
+            <h1>5. Register Schema</h1>
+            <button
+              type="button"
+              onClick={() => registerSchema()}
+              className="bg-red-100 px-1"
+            >
+              Register Schema
+            </button>
+            <div>
+              <a
+                href=""
+                id="resiger-schema-tx"
+                className="text-sky-600 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              ></a>
+            </div>
+            <div
+              id="register-schema"
+              className="text-sky-600 overflow-x-auto"
+            ></div>
+            {/* 4. Create Attesation */}
+            <h1>4. Create Attestation</h1>
+            <button
+              type="button"
+              onClick={() => createAttestation()}
+              className="bg-red-100 px-1"
+            >
+              🐾 Attest!
+            </button>
+            <div id="new-attestation"></div>
           </div>
         </>
       )}

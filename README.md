@@ -2,9 +2,14 @@
 
 ## Project scope
 
-1. Initialize new safes with safe sdk
-1. Load safes from differnt chains i.e Base Goerli, Goerli, Zora
-1. Initialize Safe Transactions
+1. 🏦 Create new safes with safe sdk
+1. 💳 Load safes from differnt chains i.e Base Goerli, Goerli, Zora
+1. 💸 Execute / Initialize Safe Transactions
+1. 🧾 Get records of attesations
+
+   1. Optinonal ability to register attestation schema
+
+1.🐾 Create attestation with saving transactions
 
 ## Layerzero
 
