@@ -52,6 +52,7 @@ export default function Home() {
   const { data: walletClient, isError, isLoading } = useWalletClient();
   const publicClient = usePublicClient();
   const provider = useProvider();
+  const signer = useSigner();
 
   // 0a. Create the EthersAdapter
   if (!walletClient) return;
@@ -180,36 +181,46 @@ export default function Home() {
       document.getElementById("get-attestation");
 
     let EASContractAddress;
-    let schemaRegistryAddress;
+    let SchemaRegistryContractAddress;
     let uid;
     let eas;
+    let schemaRegistry;
     if (!chain) return;
     if (chain.network === "sepolia") {
       EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // sepolia v0.26
+      SchemaRegistryContractAddress =
+        "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0";
       uid =
-        "0xff08bbf3d3e6e0992fc70ab9b9370416be59e87897c3d42b20549901d2cccc3e";
+        "0x5c308a858c3289f7a8756bd66f5aab60691b71fdac2cd9d9555c6cd0d0d8b1ce";
     }
 
     if (chain.network === "base-goerli") {
-      EASContractAddress = "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A"; // sepolia v0.26
-      schemaRegistryAddress = "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E";
+      EASContractAddress = "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A"; // base-goeli v0.27
+      SchemaRegistryContractAddress =
+        "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E";
       uid =
-        "0xff08bbf3d3e6e0992fc70ab9b9370416be59e87897c3d42b20549901d2cccc3e";
+        "0x1f068dfdd592c27617c573d5f669c3f9367113c8cb3231afe6b06bb2839f12c4";
     }
 
-    if (EASContractAddress) {
+    if (EASContractAddress && SchemaRegistryContractAddress) {
       eas = new EAS(EASContractAddress);
+      schemaRegistry = new SchemaRegistry(SchemaRegistryContractAddress);
     }
 
     if (!publicClient) return;
     const provider = publicClientToProvider(publicClient);
     // @ts-ignore
     eas.connect(provider);
-    if (chain?.network === "sepolia") {
-    }
+    console.log("uid", uid);
+
     if (!eas || !uid) return;
     const attestation = await eas.getAttestation(uid);
     console.log(attestation);
+
+    console.log(schemaRegistry);
+    if (!schemaRegistry) return;
+    // const schemaRecord = await schemaRegistry.getSchema({ uid });
+    // console.log(schemaRecord);
 
     if (getAttestationElement && attestation) {
       getAttestationElement.innerHTML = `
@@ -218,7 +229,68 @@ export default function Home() {
     }
   }
 
-  // 4. Create Attesation
+  // 4. Create Schema
+  async function registerSchema() {
+    var registerElement: HTMLElement | null =
+      document.getElementById("register-schema");
+    var registerSchemaTxElement: HTMLElement | null =
+      document.getElementById("resiger-schema-tx");
+
+    let schemaRegistryContractAddress;
+    let resolverAddress;
+
+    if (chain?.network === "base-goerli") {
+      schemaRegistryContractAddress =
+        "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E"; // base-goerli v0.27
+    }
+    if (chain?.network === "sepolia") {
+      resolverAddress = "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0"; // Sepolia 0.26
+      schemaRegistryContractAddress =
+        "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0"; // Sepolia 0.26
+    }
+
+    if (!schemaRegistryContractAddress) return;
+    const schemaRegistry = new SchemaRegistry(schemaRegistryContractAddress);
+    // @ts-ignore
+    schemaRegistry.connect(signer);
+    const schema = "bytes txHash, uint256 amount";
+    const revocable = true;
+    const transaction = await schemaRegistry.register({
+      schema,
+      resolverAddress,
+      revocable,
+    });
+
+    await transaction.wait();
+    console.log("🧾 Created Schema: ", transaction);
+
+    if (registerElement && registerSchemaTxElement && transaction) {
+      registerElement.innerHTML = `
+      <p>📚 Schema: ${JSON.stringify(transaction)}</p>
+      `;
+      registerSchemaTxElement.innerHTML = "🧾 view transaction";
+      if (!chain) return;
+      if (chain.network === "base-goerli") {
+        registerSchemaTxElement.setAttribute(
+          "href",
+          `https://goerli.basescan.org/tx/${transaction.tx.hash}`
+        );
+      }
+      if (chain.network === "goerli") {
+        registerSchemaTxElement.setAttribute(
+          "href",
+          `https://goerli.etherscan.io/tx/${transaction.tx.hash}`
+        );
+      }
+      if (chain.network === "sepolia") {
+        registerSchemaTxElement.setAttribute(
+          "href",
+          `https://sepolia.etherscan.io/tx/${transaction.tx.hash}`
+        );
+      }
+    }
+  }
+
   async function createAttestation() {}
 
   return (
@@ -350,12 +422,33 @@ export default function Home() {
             <div id="get-attestation" className="overflow-scroll"></div>
             <button
               type="button"
+              onClick={() => registerSchema()}
+              className="bg-red-100 px-1"
+            >
+              Register Schema
+            </button>
+            <div>
+              <a
+                href=""
+                id="resiger-schema-tx"
+                className="text-sky-600 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              ></a>
+            </div>
+            <div
+              id="register-schema"
+              className="text-sky-600 overflow-x-auto"
+            ></div>
+            {/* 4. Create Attesation */}
+            <h1>4. Create Attestation</h1>
+            <button
+              type="button"
               onClick={() => createAttestation()}
               className="bg-red-100 px-1"
             >
-              Create Attestation
+              Attest!
             </button>
-            <div id="create-attesation" className="overflow-scroll"></div>
           </div>
         </>
       )}
