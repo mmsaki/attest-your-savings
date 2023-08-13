@@ -1,0 +1,4 @@
+[submodule "graphql-attestation-safe"]
+	path = graphql-attestation-safe
+	url = https://github.com/mmsaki/graphql-attestation-safe.git
+	branch = main
