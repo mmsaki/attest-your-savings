@@ -1,10 +1,16 @@
 "use client";
 import { Suspense } from "react";
-import { useAccount, useNetwork, useWalletClient } from "wagmi";
+import {
+  useAccount,
+  useNetwork,
+  usePublicClient,
+  useWalletClient,
+} from "wagmi";
 import {
   useSigner,
   useProvider,
   walletClientToSigner,
+  publicClientToProvider,
 } from "./hooks/useSigner";
 import UseConnect from "@/app/hooks/UseConnect";
 import UseSwitchNetwork from "@/app/hooks/UseSwitchNetwork";
@@ -12,6 +18,7 @@ import UseBalance from "@/app/hooks/UseBalance";
 import UseToken from "@/app/hooks/UseToken";
 import UseBlockNumber from "@/app/hooks/UseBlockNumber";
 
+// 2. Safe SDK
 import { ethers } from "ethers";
 import SafeL2, {
   EthersAdapter,
@@ -24,6 +31,14 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import Safe from "@safe-global/protocol-kit";
 import { SafeTransactionDataPartial } from "@safe-global/safe-core-sdk-types";
 
+// 3. EAS
+import {
+  EAS,
+  Offchain,
+  SchemaEncoder,
+  SchemaRegistry,
+} from "@ethereum-attestation-service/eas-sdk";
+
 const network = "goerli";
 const owner1 = "0xFE948CB2122FDD87bAf43dCe8aFa254B1242c199";
 const owner2 = "0xc5Bfc2fc66F3d1E34B2772dA07f39358De0377f3";
@@ -35,10 +50,8 @@ export default function Home() {
   const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
   const { data: walletClient, isError, isLoading } = useWalletClient();
-  // const { sdk, safe } = useSafeAppsSDK();
-
-  // const safeAddress = safe.safeAddress;
-  // console.log(safe);
+  const publicClient = usePublicClient();
+  const provider = useProvider();
 
   // 0a. Create the EthersAdapter
   if (!walletClient) return;
@@ -145,7 +158,7 @@ export default function Home() {
       executeElement.innerHTML = `
 			<p>Executed Tx: ${JSON.stringify(txResponse, null, 2)}</p>
 			`;
-      linkElement.innerText = "ℹ️ view transaction";
+      linkElement.innerText = "🧾 view transaction";
       if (chain?.network === "base-goerli") {
         linkElement.setAttribute(
           "href",
@@ -160,6 +173,53 @@ export default function Home() {
       }
     }
   }
+
+  // 3. EAS
+  async function getAttestation() {
+    var getAttestationElement: HTMLElement | null =
+      document.getElementById("get-attestation");
+
+    let EASContractAddress;
+    let schemaRegistryAddress;
+    let uid;
+    let eas;
+    if (!chain) return;
+    if (chain.network === "sepolia") {
+      EASContractAddress = "0xC2679fBD37d54388Ce493F1DB75320D236e1815e"; // sepolia v0.26
+      uid =
+        "0xff08bbf3d3e6e0992fc70ab9b9370416be59e87897c3d42b20549901d2cccc3e";
+    }
+
+    if (chain.network === "base-goerli") {
+      EASContractAddress = "0xAcfE09Fd03f7812F022FBf636700AdEA18Fd2A7A"; // sepolia v0.26
+      schemaRegistryAddress = "0x720c2bA66D19A725143FBf5fDC5b4ADA2742682E";
+      uid =
+        "0xff08bbf3d3e6e0992fc70ab9b9370416be59e87897c3d42b20549901d2cccc3e";
+    }
+
+    if (EASContractAddress) {
+      eas = new EAS(EASContractAddress);
+    }
+
+    if (!publicClient) return;
+    const provider = publicClientToProvider(publicClient);
+    // @ts-ignore
+    eas.connect(provider);
+    if (chain?.network === "sepolia") {
+    }
+    if (!eas || !uid) return;
+    const attestation = await eas.getAttestation(uid);
+    console.log(attestation);
+
+    if (getAttestationElement && attestation) {
+      getAttestationElement.innerHTML = `
+      <p>🐾 Attestation: ${JSON.stringify(attestation)}</p>
+      `;
+    }
+  }
+
+  // 4. Create Attesation
+  async function createAttestation() {}
 
   return (
     <main>
@@ -234,7 +294,7 @@ export default function Home() {
         </>
       )}
       {/* 2. Safe Base Goerli */}
-      {isConnected && chain?.network === "base-goerli" && (
+      {isConnected && (chain?.network === "base-goerli" || "sepolia") && (
         <>
           <div className="border p-4">
             <div id="safe-sdk"></div>
@@ -279,6 +339,23 @@ export default function Home() {
               id="execute-transaction"
             ></div>
             {/* 3. Making Attestations */}
+            <h1 className="text=2xl">Attestations</h1>
+            <button
+              type="button"
+              onClick={() => getAttestation()}
+              className="bg-red-100 px-1"
+            >
+              Get Attestation
+            </button>
+            <div id="get-attestation" className="overflow-scroll"></div>
+            <button
+              type="button"
+              onClick={() => createAttestation()}
+              className="bg-red-100 px-1"
+            >
+              Create Attestation
+            </button>
+            <div id="create-attesation" className="overflow-scroll"></div>
           </div>
         </>
       )}
