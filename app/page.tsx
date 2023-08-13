@@ -38,6 +38,8 @@ import {
   SchemaEncoder,
   SchemaRegistry,
 } from "@ethereum-attestation-service/eas-sdk";
+import Category from "./components/Category";
+import { productCategories } from "@/constants/utils";
 
 const network = "goerli";
 const owner1 = "0xFE948CB2122FDD87bAf43dCe8aFa254B1242c199";
@@ -410,6 +412,11 @@ export default function Home() {
 
   return (
     <main>
+      <div className="flex flex-wrap -mt-2.5 -mx-2.5 mb-8 lg:block lg:mx-0">
+        {productCategories.map((category) => (
+          <Category item={category} key={category.id} />
+        ))}
+      </div>
       {isConnected && chain?.network === "sepolia" && (
         <>
           <div className="">

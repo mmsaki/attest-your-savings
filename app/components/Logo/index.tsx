@@ -12,21 +12,18 @@ const Test = ({ className, light }: TestProps) => {
   const isDarkMode = colorMode === "dark";
 
   return (
-    <Link className={`flex w-[7.125rem] ${className}`} href="/">
+    <Link className={`flex w-[7.125rem] ${className} items-center`} href="/">
       <Image
         className="w-full h-auto"
-        src={
-          light
-            ? "/images/logo-light.svg"
-            : isDarkMode
-            ? "/images/logo-light.svg"
-            : "/images/logo-dark.svg"
-        }
-        width={113}
-        height={25}
-        alt="Bruddle"
+        src={light ? "/logo-light.svg" : isDarkMode ? "/Logo.svg" : "/Logo.svg"}
+        width={22}
+        height={22}
+        alt="attest"
         priority
       />
+      <div className="flex whitespace-pre">
+        <p className="text-white font-bold pl-2 flex">My Savings</p>
+      </div>
     </Link>
   );
 };
