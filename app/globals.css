@@ -2,20 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-	--foreground-rgb: 0, 0, 0;
-	--background-start-rgb: 214, 219, 220;
-	--background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		--foreground-rgb: 255, 255, 255;
-		--background-start-rgb: 0, 0, 0;
-		--background-end-rgb: 0, 0, 0;
-	}
-}
-
-html {
-	font-family: 'roboto';
+@layer components {
+  .splide__pagination.splide__pagination-cards {
+    @apply static mt-2;
+  }
+  .splide__pagination.splide__pagination-crypto {
+    @apply -top-10 left-auto right-0 bottom-auto;
+  }
+  .splide__pagination .splide__pagination__page {
+    @apply mx-1 bg-purple-3;
+  }
+  .splide__pagination .splide__pagination__page.is-active {
+    @apply bg-purple-1 scale-100;
+  }
 }
