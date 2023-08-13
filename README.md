@@ -3,7 +3,7 @@
 ## Project scope
 
 1. 🏦 Create new safes with safe sdk
-1. 💳 Load safes from differnt chains i.e Base Goerli, Goerli, Zora
+1. 💳 Load safes from differnt chains i.e Base Goerli, Optimism, etc.
 1. 💸 Execute / Initialize Safe Transactions
 1. 🧾 Get records of attesations
 
