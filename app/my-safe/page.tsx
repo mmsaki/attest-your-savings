@@ -527,6 +527,137 @@ const CryptoTransactionPage = () => {
   };
   return (
     <Layout title="My Safe" back>
+      <div className="flex space-x-5 lg:block lg:space-x-0 lg:space-y-5">
+        <div className="flex flex-col flex-1 card p-5">
+          <div className="flex items-center mb-6">
+            <div className="w-8 mr-3 text-0 rounded-full dark:bg-white">
+              {chain?.network === "base" || chain?.network === "base-goerli" ? (
+                <div className="rounded-full h-[24px] w-[24px] bg-[conic-gradient(#0000ff,#0000ff,#fff)]"></div>
+              ) : (
+                <Image
+                  className="w-full dark:scale-105"
+                  src="/images/ethereum.svg"
+                  width={28}
+                  height={28}
+                  alt=""
+                />
+              )}
+            </div>
+            <div className="mr-1 font-bold">
+              {chain ? chain?.name + " " + chain?.nativeCurrency.symbol : ""}
+            </div>
+          </div>
+          <div className="text-h4">
+            Balance:{" "}
+            {userBalance
+              ? userBalance?.formatted + userBalance?.symbol
+              : "0 ETH"}
+          </div>
+          <div className="mb-6 text-sm font-medium text-n-3 dark:text-white/50">
+            $
+            {userBalance
+              ? eval(userBalance?.formatted + "*" + "1800").toFixed(2)
+              : "0"}
+          </div>
+          <div className="mb-6 pb-6 border-b border-dashed border-n-1 text-sm dark:border-white"></div>
+          {/* 1. Deploy Safe */}
+          <h2>1. Deploy Safe</h2>
+          <button
+            type="button"
+            onClick={() => createNewSafe()}
+            className="btn-stroke btn-small mt-5"
+          >
+            🏦 Create New Safe
+          </button>
+          <div
+            id="safe-factoy"
+            className="text-green-700 overflow-x-auto"
+          ></div>
+          <div className="mb-6 pb-6 border-b border-dashed border-n-1 dark:border-white">
+            <div className="flex justify-between items-center mb-2.5 text-xs font-medium text-n-3 dark:text-white/50">
+              <div>From</div>
+              <div>
+                {userBalance?.formatted} {userBalance?.symbol}{" "}
+              </div>
+            </div>
+            {/* 2. View Safes */}
+            <h2 className="bold">2. View Safes</h2>
+            <button
+              type="button"
+              onClick={() => getGoerliSafe()}
+              className="btn-stroke btn-small my-5 w-full"
+            >
+              <Icon name="repeat" />
+              View Safe
+            </button>
+          </div>
+          <div className="mb-2 md:mb-7">
+            <div id="safe-sdk" className="overflow-x-auto"></div>
+          </div>
+          {/* 3. Execute transactions */}
+          <h1>3. Execute Safe Tranaction</h1>
+          <div id="safe-transaction" className="overflow-x-auto"></div>
+          <button
+            type="button"
+            onClick={() => createTransaction()}
+            className="btn-stroke btn-large mt-5"
+          >
+            Execute Transaction
+          </button>
+          <div>
+            <a
+              id="tx-link"
+              href=""
+              className="text-sky-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            ></a>
+          </div>
+        </div>
+        <div className="flex-1">
+          <div className="card">
+            <div className="card-head">
+              <div className="text-h6">Transaction Details</div>
+
+              <button className="group">
+                <Icon
+                  className="icon-18 transition-colors dark:fill-white group-hover:fill-purple-1"
+                  name="chart"
+                />
+              </button>
+            </div>
+            <div className="pt-2 px-5 pb-5">
+              <div
+                className="text-sky-600 overflow-x-auto  overflow-scroll"
+                id="execute-transaction"
+              ></div>
+              <div>
+                {transactionDetails.map((item, index) => (
+                  <div
+                    className="flex justify-between items-center py-3.5 border-b border-dashed border-n-1 text-sm last:border-none dark:border-white"
+                    key={index}
+                  >
+                    <div className="font-medium text-n-3 dark:text-white/50">
+                      {item.title}
+                    </div>
+                    <div className="font-bold" id={item.title}>
+                      {item.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <a
+                id="tx-link"
+                href=""
+                className="btn-stroke btn-small w-full mt-4"
+              >
+                <Icon name="chart-fill" />
+                <span>See more details</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* 1. Base Goerli */}
       {isConnected &&
         (chain?.network === "base-goerli" || "sepolia" || "goerli") && (
@@ -623,137 +754,6 @@ const CryptoTransactionPage = () => {
             </div>
           </>
         )}
-      <div className="flex space-x-5 lg:block lg:space-x-0 lg:space-y-5">
-        <div className="flex flex-col flex-1 card p-5">
-          <div className="flex items-center mb-6">
-            <div className="w-8 mr-3 text-0 rounded-full dark:bg-white">
-              {chain?.network === "base" || chain?.network === "base-goerli" ? (
-                <div className="rounded-full h-[24px] w-[24px] bg-[conic-gradient(#0000ff,#0000ff,#fff)]"></div>
-              ) : (
-                <Image
-                  className="w-full dark:scale-105"
-                  src="/images/ethereum.svg"
-                  width={28}
-                  height={28}
-                  alt=""
-                />
-              )}
-            </div>
-            <div className="mr-1 font-bold">
-              {chain ? chain?.name + " " + chain?.nativeCurrency.symbol : ""}
-            </div>
-          </div>
-          <div className="text-h4">
-            Balance:{" "}
-            {userBalance
-              ? userBalance?.formatted + userBalance?.symbol
-              : "0 ETH"}
-          </div>
-          <div className="mb-6 text-sm font-medium text-n-3 dark:text-white/50">
-            $
-            {userBalance
-              ? eval(userBalance?.formatted + "*" + "1800").toFixed(2)
-              : "0"}
-          </div>
-          <div className="mb-6 pb-6 border-b border-dashed border-n-1 text-sm dark:border-white"></div>
-          {/* 1. Deploy Safe */}
-          <h2>1. Deploy Safe</h2>
-          <button
-            type="button"
-            onClick={() => createNewSafe()}
-            className="btn-stroke btn-small mt-5"
-          >
-            🏦 Create New Safe
-          </button>
-          <div
-            id="safe-factoy"
-            className="text-green-700 overflow-x-auto"
-          ></div>
-          <div className="mb-6 pb-6 border-b border-dashed border-n-1 dark:border-white">
-            <div className="flex justify-between items-center mb-2.5 text-xs font-medium text-n-3 dark:text-white/50">
-              <div>From</div>
-              <div>
-                {userBalance?.formatted} {userBalance?.symbol}{" "}
-              </div>
-            </div>
-            {/* 2. View Safes */}
-            <h2 className="bold">2. View Safes</h2>
-            <button
-              type="button"
-              onClick={() => getGoerliSafe()}
-              className="btn-stroke btn-small my-5 w-full"
-            >
-              <Icon name="repeat" />
-              View Safe
-            </button>
-          </div>
-          <div className="mb-10 md:mb-7">
-            <div id="safe-sdk" className="overflow-x-auto"></div>
-          </div>
-          {/* 3. Execute transactions */}
-          <h1>3. Execute Safe Tranaction</h1>
-          <div id="safe-transaction" className="overflow-x-auto"></div>
-          <button
-            type="button"
-            onClick={() => createTransaction()}
-            className="btn-stroke btn-large mt-5"
-          >
-            Execute Transaction
-          </button>
-          <div>
-            <a
-              id="tx-link"
-              href=""
-              className="text-sky-600 hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            ></a>
-          </div>
-        </div>
-        <div className="flex-1">
-          <div className="card">
-            <div className="card-head">
-              <div className="text-h6">Transaction Details</div>
-
-              <button className="group">
-                <Icon
-                  className="icon-18 transition-colors dark:fill-white group-hover:fill-purple-1"
-                  name="chart"
-                />
-              </button>
-            </div>
-            <div className="pt-2 px-5 pb-5">
-              <div
-                className="text-sky-600 overflow-x-auto  overflow-scroll"
-                id="execute-transaction"
-              ></div>
-              <div>
-                {transactionDetails.map((item, index) => (
-                  <div
-                    className="flex justify-between items-center py-3.5 border-b border-dashed border-n-1 text-sm last:border-none dark:border-white"
-                    key={index}
-                  >
-                    <div className="font-medium text-n-3 dark:text-white/50">
-                      {item.title}
-                    </div>
-                    <div className="font-bold" id={item.title}>
-                      {item.value}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <a
-                id="tx-link"
-                href=""
-                className="btn-stroke btn-small w-full mt-4"
-              >
-                <Icon name="chart-fill" />
-                <span>See more details</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
     </Layout>
   );
 };
