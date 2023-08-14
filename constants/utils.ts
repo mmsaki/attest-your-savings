@@ -26,6 +26,6 @@ export const productCategories = [
       "Sending or receiving cryptocurrency",
       "Pricing and fees",
     ],
-    path: "/my-dashboard",
+    path: "/my-safe",
   },
 ];

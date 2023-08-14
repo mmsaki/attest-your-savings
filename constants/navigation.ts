@@ -10,26 +10,6 @@ export const navigation = [
     icons: "projects",
     url: "/my-attestations",
   },
-  {
-    title: "Tasks",
-    icon: "tasks",
-    url: "/my-tasks",
-  },
-  {
-    title: "Transactions",
-    icons: "layers",
-    url: "/my-transactions",
-  },
-  {
-    title: "Calendar",
-    icon: "calendar",
-    url: "/my-calendar",
-  },
-  {
-    title: "Inbox",
-    icon: "email",
-    url: "/my-inbox",
-  },
 ];
 
 export const mobileNavigation = [
@@ -40,14 +20,6 @@ export const mobileNavigation = [
   {
     icon: "attestations",
     url: "/my-attestations",
-  },
-  {
-    icon: "tasks",
-    url: "/my-tasks",
-  },
-  {
-    icon: "layers",
-    url: "/my-transactions",
   },
   {
     icon: "dots",
