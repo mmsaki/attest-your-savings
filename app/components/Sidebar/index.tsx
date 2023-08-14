@@ -40,12 +40,14 @@ const Sidebar = ({}: SidebarProps) => {
           }`}
           href="/"
         >
+          {chain ? " 🟢 " : " 🔴"}
           <div
             className={`relative w-5.5 h-5.5 mr-2.5 rounded-full overflow-hidden ${
               visible ? "mr-2.5" : "xl:mr-0"
             }`}
           ></div>
-          {chain ? chain?.name + " " + chain?.id + " 🟢 " : "Not Connected 🔴"}
+
+          {chain ? chain?.name + " " + chain?.id : "Not Connected"}
         </Link>
         <button
           className={`btn-transparent-light btn-square btn-small ml-auto ${

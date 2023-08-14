@@ -4,7 +4,7 @@ import TransactionsList from "./TransactionsList";
 
 const page = () => {
   return (
-    <Layout title="My Transactions">
+    <Layout title="My Attestations">
       <TransactionsList />
     </Layout>
   );

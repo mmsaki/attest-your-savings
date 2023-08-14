@@ -1,12 +1,12 @@
 export const navigation = [
   {
     title: "My Safe",
-    icon: "profile",
+    icons: "safe",
     url: "/my-safe",
   },
   {
     title: "My Attestations",
-    icon: "projects",
+    icons: "attestations",
     counter: 16,
     url: "/my-attestations",
   },
@@ -14,7 +14,7 @@ export const navigation = [
 
 export const mobileNavigation = [
   {
-    icon: "profile",
+    icon: "safe",
     url: "/my-safe",
   },
   {

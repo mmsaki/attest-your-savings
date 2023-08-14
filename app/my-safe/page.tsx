@@ -526,7 +526,7 @@ const CryptoTransactionPage = () => {
     console.log("NEW VALUE", event.target.value);
   };
   return (
-    <Layout title="Transaction details" back>
+    <Layout title="My Safe" back>
       {/* 1. Base Goerli */}
       {isConnected &&
         (chain?.network === "base-goerli" || "sepolia" || "goerli") && (
@@ -627,23 +627,23 @@ const CryptoTransactionPage = () => {
         <div className="flex flex-col flex-1 card p-5">
           <div className="flex items-center mb-6">
             <div className="w-8 mr-3 text-0 rounded-full dark:bg-white">
-              <Image
-                className="w-full dark:scale-105"
-                src="/images/ethereum.svg"
-                width={28}
-                height={28}
-                alt=""
-              />
+              <div className="rounded-full h-[70px] w-[70px] bg-[conic-gradient(#0000ff,#0000ff,#fff)]"></div>
             </div>
             <div className="mr-1 font-bold">
-              {chain?.name + " " + chain?.nativeCurrency.symbol}
+              {chain ? chain?.name + " " + chain?.nativeCurrency.symbol : ""}
             </div>
           </div>
           <div className="text-h4">
-            Balance: {userBalance?.formatted} {userBalance?.symbol}{" "}
+            Balance:{" "}
+            {userBalance
+              ? userBalance?.formatted + userBalance?.symbol
+              : "0 ETH"}
           </div>
           <div className="mb-6 text-sm font-medium text-n-3 dark:text-white/50">
-            ${eval(userBalance?.formatted + "*" + "1800").toFixed(2)}
+            $
+            {userBalance
+              ? eval(userBalance?.formatted + "*" + "1800").toFixed(2)
+              : "0"}
           </div>
           <div className="mb-6 pb-6 border-b border-dashed border-n-1 text-sm dark:border-white"></div>
           {/* 1. Deploy Safe */}

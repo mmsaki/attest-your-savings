@@ -105,7 +105,7 @@ const TransactionsList = () => {
               <Sorting title="Attester" />
             </th>
             <th className="th-custom lg:hidden">
-              <Sorting title="Service" />
+              <Sorting title="Transaction" />
             </th>
             <th className="th-custom lg:hidden">
               <Sorting title="Fee" />
