@@ -627,7 +627,17 @@ const CryptoTransactionPage = () => {
         <div className="flex flex-col flex-1 card p-5">
           <div className="flex items-center mb-6">
             <div className="w-8 mr-3 text-0 rounded-full dark:bg-white">
-              <div className="rounded-full h-[70px] w-[70px] bg-[conic-gradient(#0000ff,#0000ff,#fff)]"></div>
+              {chain?.network === "base" || chain?.network === "base-goerli" ? (
+                <div className="rounded-full h-[24px] w-[24px] bg-[conic-gradient(#0000ff,#0000ff,#fff)]"></div>
+              ) : (
+                <Image
+                  className="w-full dark:scale-105"
+                  src="/images/ethereum.svg"
+                  width={28}
+                  height={28}
+                  alt=""
+                />
+              )}
             </div>
             <div className="mr-1 font-bold">
               {chain ? chain?.name + " " + chain?.nativeCurrency.symbol : ""}
