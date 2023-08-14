@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "../../../components/Image";
 import Icon from "../../../components/Icon";
 import TransactionDetails from "../../../components/TransactionDetails";
 import { AttestationProps } from "..";
+import Link from "next/link";
+import { useNetwork } from "wagmi";
 
 type Props = {
   item: AttestationProps;
@@ -10,6 +12,14 @@ type Props = {
 
 const Row = ({ item }: Props) => {
   const [visible, setVisible] = useState<boolean>(false);
+  const { chain } = useNetwork();
+  const [network, setNetwork] = useState("");
+
+  if (!chain) throw Error("Not connected");
+
+  useEffect(() => {
+    setNetwork(chain.network);
+  }, [chain.network]);
 
   return (
     <tr className="">
@@ -28,13 +38,19 @@ const Row = ({ item }: Props) => {
             </div>
           </div>
         </div>
-        <TransactionDetails
+        {/* <TransactionDetails
           visible={visible}
           onClose={() => setVisible(false)}
-        />
+        /> */}
       </td>
-      <td className="td-custom font-medium text-n-3 lg:hidden dark:text-white/75">
-        {item.transactionHash}
+      <td className="td-custom font-medium text-n-3 lg:hidden dark:text-white/75  hover:text-purple-1">
+        {network === "base-goerli" ? (
+          <Link href={`https://goerli.basescan.org/tx/${item.transactionHash}`}>
+            {item.transactionHash}
+          </Link>
+        ) : (
+          item.transactionHash
+        )}
       </td>
       <td className="td-custom font-medium lg:hidden">{item.__typename}</td>
       <td className="td-custom whitespace-nowrap text-right font-bold md:pr-4">
