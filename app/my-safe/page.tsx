@@ -648,7 +648,7 @@ const CryptoTransactionPage = () => {
               </div>
               <a
                 id="tx-link"
-                href=""
+                href="#"
                 className="btn-stroke btn-small w-full mt-4"
               >
                 <Icon name="chart-fill" />
