@@ -144,7 +144,7 @@ const CryptoTransactionPage = () => {
   async function getGoerliSafe() {
     let network;
     let safeAddress;
-    if (!chain) return;
+    if (!chain) throw Error("Not Connected");
     if (chain.network === "goerli") {
       safeAddress = "0xfa616b2F374665C9ECfEa1D29c1cfB488d5e7136"; // goerli
       network = "goerli";
@@ -168,7 +168,7 @@ const CryptoTransactionPage = () => {
 
     var safe: HTMLElement | null = document.getElementById("safe-sdk");
 
-    if (!safeAddress) return;
+    if (!safeAddress) throw Error("No safe address");
     const mySafe = await safeService.getSafeInfo(safeAddress);
     console.log("My Safe ==> ", mySafe);
 
