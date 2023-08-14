@@ -1,4 +1,6 @@
-# 😀 Attest Your Savings
+# 😀 Attest Your Savings on Base
+
+![OP on Base](./public/images/optimism-base.webp)
 
 ## Project scope
 
