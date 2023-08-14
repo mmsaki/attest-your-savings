@@ -13,6 +13,13 @@
 
 1. 🐾 Create attestation with saving transactions
 
+## Stack
+
+1. Base
+1. Safe
+1. Ethereum Attestation Service
+1. GraphQl
+
 ## Layerzero
 
 A user can pay from one source chain and trigger an action on destination chain. No bridging risk.
